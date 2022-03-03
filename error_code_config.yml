@@ -1,0 +1,4 @@
+error-tags:
+  USTI:
+    packages:
+      - com.exasol.udfstartuptimeimprover
