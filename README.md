@@ -14,13 +14,13 @@
 [![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Ajava-udf-startup-time-improver&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=com.exasol%3Ajava-udf-startup-time-improver)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Ajava-udf-startup-time-improver&metric=ncloc)](https://sonarcloud.io/dashboard?id=com.exasol%3Ajava-udf-startup-time-improver)
 
-The Java UDF startup time improver is a tool that optimizes Java UDF. It does so by preloading the Java classes and writing them into a class dump on BucketFS. Then it replaces the script definition with a different one that declares a jvm-option which introduces the JVM to use the dump.
+The Java UDF startup time improver is a tool that optimizes Java UDF. It does so by preloading the Java classes and writing them into a class dump on BucketFS. Then it replaces the script definition with a different one that declares a JVM-option which instructs the JVM to use the dump.
 
 ## Installation
 
-* Download the latest release of this project.
-* Upload the jar to BucketFS.
-* Create the following functions:
+1. Download the latest release of this project.
+2. Upload the jar to BucketFS.
+3. Create the following functions:
   ```sql
   CREATE JAVA SCALAR SCRIPT "JAVA_UDF_STARTUP_TIME_IMPROVER" (
     "UDF_DEFINITION" VARCHAR(2000000) UTF8, 
@@ -44,7 +44,7 @@ The Java UDF startup time improver is a tool that optimizes Java UDF. It does so
 
 ## Usage
 
-Crate a connection with the write-password of the BucketFS where the improver can write the class-dump to.
+Create a connection with the write-password of the BucketFS where the improver can write the class-dump to.
 
 ```sql
 CREATE CONNECTION BFS_CONNECTION
@@ -53,7 +53,7 @@ USER ''
 IDENTIFIED BY '<BucketFsWritePassword>';
 ```
 
-Download the class list for the UDF / adapter script that you want to optimize. You can find this file attached to the GitHub release. Now upload the file to a bucket in BucketFS.
+Download the class list for the UDF / adapter script that you want to optimize. You can find file `classes.lst` attached to the GitHub release. Now upload the file to a bucket in BucketFS.
 
 Run the improver:
 
@@ -61,12 +61,12 @@ Run the improver:
 execute script TEST.JAVA_UDF_STARTUP_TIME_IMPROVER(
     '<schema of the script to optimize>', 
     '<name of the script to optimize>', 
-    '<path in bucketfs to the listt of classes to preload>', 
+    '<path in bucketfs to the list of classes to preload>', 
     '<name of the connection we just created>', 
     <bucketfs-port>, 
-    '<name of the BucketFS service where the improver stors the class-dump>', 
-    '<name of the Bucket where the improver stors the class-dump>', 
-    '<path for the class.dump in the bucket>')
+    '<name of the BucketFS service where the improver stores the class-dump>', 
+    '<name of the Bucket where the improver stores the class-dump>', 
+    '<path for the class dump file in the bucket>')
 ```
 
 For example, if you want to optimize the udf `TEST.MY_UDF` you can use parameters like:

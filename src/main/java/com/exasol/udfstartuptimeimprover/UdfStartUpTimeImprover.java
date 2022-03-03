@@ -42,7 +42,6 @@ public class UdfStartUpTimeImprover {
 
     /**
      * Entrypoint of the startup time improver UDF.
-     *
      * 
      * @param exaMetadata exasol metadata
      * @param exaIterator iterator
@@ -115,7 +114,7 @@ public class UdfStartUpTimeImprover {
         } catch (final ExaIterationException | ExaDataTypeException | NullPointerException exception) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-USTI-12")
                     .message("Could not read required parameter {{name}}.", parameterName)
-                    .mitigation("Make sure that you provide that parameter and that it's of type VARCHAR type.")
+                    .mitigation("Make sure that you provide that parameter and that it's of type VARCHAR.")
                     .toString(), exception);
         }
     }
@@ -126,7 +125,7 @@ public class UdfStartUpTimeImprover {
         } catch (final ExaIterationException | ExaDataTypeException | NullPointerException exception) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-USTI-15")
                     .message("Could not read required parameter {{name}}.", parameterName)
-                    .mitigation("Make sure that you provide that parameter and that it's of type INTEGER type.")
+                    .mitigation("Make sure that you provide that parameter and that it's of type INTEGER.")
                     .toString(), exception);
         }
     }
