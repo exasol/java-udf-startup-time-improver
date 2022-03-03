@@ -44,6 +44,7 @@ Code name: Initial Implementation
 * Added `org.apache.maven.plugins:maven-resources-plugin:2.6`
 * Added `org.apache.maven.plugins:maven-site-plugin:3.3`
 * Added `org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M5`
+* Added `org.codehaus.mojo:exec-maven-plugin:3.0.0`
 * Added `org.codehaus.mojo:flatten-maven-plugin:1.2.7`
 * Added `org.codehaus.mojo:versions-maven-plugin:2.8.1`
 * Added `org.jacoco:jacoco-maven-plugin:0.8.7`
