@@ -16,8 +16,12 @@ class UdfDefinitionTest {
                 "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
                 List.of("/buckets/bfsdefault/default/test.jar", "/buckets/bfsdefault/default/other.jar"),
                 List.of("-Xms128m", "-Xmx1024m"));
-        assertThat(udfDefinition.toString(), equalTo(
-                "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n%scriptclass com.example.testudf.MyUdf;\n%jvmoption -Xms128m -Xmx1024m;\n%jar /buckets/bfsdefault/default/test.jar;\n%jar /buckets/bfsdefault/default/other.jar;\n\n"));
+        assertThat(udfDefinition.toString(),
+                equalTo("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
+                        + "%scriptclass com.example.testudf.MyUdf;\n"//
+                        + "%jvmoption -Xms128m -Xmx1024m;\n"//
+                        + "%jar /buckets/bfsdefault/default/test.jar;\n"
+                        + "%jar /buckets/bfsdefault/default/other.jar;\n\n"));
     }
 
     @Test
@@ -25,7 +29,9 @@ class UdfDefinitionTest {
         final UdfDefinition udfDefinition = new UdfDefinition(
                 "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
                 List.of("/buckets/bfsdefault/default/test.jar"), Collections.emptyList());
-        assertThat(udfDefinition.toString(), equalTo(
-                "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n%scriptclass com.example.testudf.MyUdf;\n%jar /buckets/bfsdefault/default/test.jar;\n\n"));
+        assertThat(udfDefinition.toString(),
+                equalTo("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
+                        + "%scriptclass com.example.testudf.MyUdf;\n"
+                        + "%jar /buckets/bfsdefault/default/test.jar;\n\n"));
     }
 }

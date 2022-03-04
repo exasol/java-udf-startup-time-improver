@@ -17,6 +17,7 @@ public class MyUdf {
      *
      * @param exaMetadata exasol metadata
      * @param exaIterator iterator
+     * @return {@code "Hello World"}.
      * @throws Exception if data can't get be loaded
      */
     @SuppressWarnings({ "java:S112", "java:S1130" }) // Exception is too generic and not thrown. This signature is

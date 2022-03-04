@@ -28,7 +28,7 @@ public class UdfDefinitionParser {
     }
 
     private void assertStartsWithCreate(final String udfDefinitionString) {
-        if (!udfDefinitionString.startsWith("CREATE")) {
+        if (!udfDefinitionString.toUpperCase().startsWith("CREATE")) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-USTI-1")
                     .message(FAILED_TO_PARSE_SCRIPT_DEFINITION + "The script definition must start with 'CREATE'.")
                     .toString());
@@ -80,7 +80,7 @@ public class UdfDefinitionParser {
     }
 
     private void assertScriptClassIsSet(final String scriptClass) {
-        if (scriptClass == null) {
+        if (scriptClass == null || scriptClass.isBlank()) {
             throw new IllegalArgumentException(ExaError.messageBuilder("E-USTI-5")
                     .message(FAILED_TO_PARSE_SCRIPT_DEFINITION + "Could not find required '%scriptclass'.").toString());
         }

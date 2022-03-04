@@ -21,6 +21,7 @@ The Java UDF startup time improver is a tool that optimizes Java UDF. It does so
 1. Download the latest release of this project.
 2. Upload the jar to BucketFS.
 3. Create the following functions:
+
   ```sql
   CREATE JAVA SCALAR SCRIPT "JAVA_UDF_STARTUP_TIME_IMPROVER" (
     "UDF_DEFINITION" VARCHAR(2000000) UTF8, 
@@ -32,7 +33,7 @@ The Java UDF startup time improver is a tool that optimizes Java UDF. It does so
     "PATH_FOR_DUMP" VARCHAR(200) UTF8)
   RETURNS VARCHAR(2000) UTF8 AS
   %scriptclass com.exasol.udfstartuptimeimprover.UdfStartUpTimeImprover;
-  %jar /buckets/bfsdefault/default/improver.jar;
+  %jar /buckets/bfsdefault/default/java-udf-startup-time-improver.jar;
   /
   
   CREATE LUA SCRIPT "JAVA_UDF_STARTUP_TIME_IMPROVER" (UDF_SCHEMA,UDF_NAME,CLASSES,CONNECTION_NAME,BUCKET_FS_PORT,BUCKET_FS_SERVICE,BUCKET_FS_BUCKET,PATH_FOR_DUMP) RETURNS ROWCOUNT AS
