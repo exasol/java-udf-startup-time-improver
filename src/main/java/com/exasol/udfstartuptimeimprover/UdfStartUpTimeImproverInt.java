@@ -56,6 +56,7 @@ class UdfStartUpTimeImproverInt {
         }
     }
 
+    @SuppressWarnings("java:S5443") // writing to tmp is safe in a UDF since it runs in it's own container
     private void uploadDump(final UnsynchronizedBucket bucket, final String target) {
         try {
             bucket.uploadFileNonBlocking(Path.of(DUMP_IN_TMP), target);
