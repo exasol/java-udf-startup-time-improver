@@ -1,0 +1,17 @@
+sources:
+  - type: maven
+    path: pom.xml
+    modules:
+      - lombok
+      - integration_tests
+      - lombok
+      - jar_artifact
+      - udf_coverage
+  - type: maven
+    path: udf-for-testing/pom.xml
+    advertise: false
+    modules:
+      - jar_artifact
+version:
+  fromSource: pom.xml
+

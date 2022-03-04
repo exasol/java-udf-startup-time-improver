@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.exasol</groupId>
+    <artifactId>udf-for-testing</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
+    <name>UDF for testing</name>
+    <repositories>
+        <repository>
+            <id>maven.exasol.com</id>
+            <url>https://maven.exasol.com/artifactory/exasol-releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven.exasol.com-snapshots</id>
+            <url>https://maven.exasol.com/artifactory/exasol-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.exasol</groupId>
+            <artifactId>exasol-script-api</artifactId>
+            <version>6.1.7</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <configuration>
+                    <finalName>udf-for-testing</finalName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.9.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <parent>
+        <artifactId>udf-for-testing-generated-parent</artifactId>
+        <groupId>com.exasol</groupId>
+        <version>0.1.0</version>
+        <relativePath>pk_generated_parent.pom</relativePath>
+    </parent>
+</project>
