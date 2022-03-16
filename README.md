@@ -16,6 +16,8 @@
 
 The Java UDF startup time improver is a tool that optimizes Java UDF. It does so by preloading the Java classes and writing them into a class dump on BucketFS. Then it replaces the script definition with a different one that declares a JVM-option which instructs the JVM to use the dump.
 
+**This tool can only optimize projects that are prepared for it.** To find out if a certain project is already prepared for being optimized look out for the badge "Prepared for Java UDF startup time improver" in the project's readme.
+
 ## Installation
 
 1. Download the latest release of this project.
@@ -38,7 +40,7 @@ The Java UDF startup time improver is a tool that optimizes Java UDF. It does so
   
   CREATE LUA SCRIPT "JAVA_UDF_STARTUP_TIME_IMPROVER" (UDF_SCHEMA,UDF_NAME,CLASSES,CONNECTION_NAME,BUCKET_FS_PORT,BUCKET_FS_SERVICE,BUCKET_FS_BUCKET,PATH_FOR_DUMP) RETURNS ROWCOUNT AS
     local updatedUdfDef = query([[SELECT TEST.JAVA_UDF_STARTUP_TIME_IMPROVER_INT(
-      (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME=:udfName AND SCRIPT_SCHEMA=:udfSchema),:classes,:connection, :bfsPort, :bfsService, :bfsBucket, :pathForDump) AS CMD]], { udfName = UDF_NAME, udfSchema = UDF_SCHEMA, classes = CLASSES, connection = CONNECTION_NAME, bfsPort = BUCKET_FS_PORT, bfsService = BUCKET_FS_SERVICE, bfsBucket = BUCKET_FS_BUCKET, pathForDump = PATH_FOR_DUMP })
+      (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME=:udfName AND SCRIPT_SCHEMA=:udfSchema),:connection, :bfsPort, :bfsService, :bfsBucket, :pathForDump) AS CMD]], { udfName = UDF_NAME, udfSchema = UDF_SCHEMA, connection = CONNECTION_NAME, bfsPort = BUCKET_FS_PORT, bfsService = BUCKET_FS_SERVICE, bfsBucket = BUCKET_FS_BUCKET, pathForDump = PATH_FOR_DUMP })
     query(updatedUdfDef[1].CMD)
   /
   ```
@@ -61,8 +63,7 @@ Run the improver:
 ```sql
 execute script TEST.JAVA_UDF_STARTUP_TIME_IMPROVER(
     '<schema of the script to optimize>', 
-    '<name of the script to optimize>', 
-    '<path in bucketfs to the list of classes to preload>', 
+    '<name of the script to optimize>',  
     '<name of the connection we just created>', 
     <bucketfs-port>, 
     '<name of the BucketFS service where the improver stores the class-dump>', 
@@ -76,7 +77,6 @@ For example, if you want to optimize the udf `TEST.MY_UDF` you can use parameter
 execute script TEST.JAVA_UDF_STARTUP_TIME_IMPROVER(
     'TEST', 
     'MY_UDF', 
-    '/buckets/bfsdefault/default/classes.lst', 
     'BFS_CONNECTION', 
     2580, 
     'bfsdefault', 
