@@ -49,7 +49,7 @@ class UdfStartUpTimeImproverInt {
                 .collect(Collectors.toList());
         if (classLists.isEmpty()) {
             throw new IllegalStateException(ExaError.messageBuilder("E-USTI-17")
-                    .message("Non of the jars of this script contained a " + CLASSES_LIST_FILE_NAME + " file.")
+                    .message("None of the jars of this script contained a " + CLASSES_LIST_FILE_NAME + " file.")
                     .mitigation(
                             "Please check that the jar you're trying to optimize is \"Prepared for Java UDF startup time improver\".")
                     .toString());
@@ -65,7 +65,7 @@ class UdfStartUpTimeImproverInt {
         } catch (final IOException exception) {
             throw new IllegalStateException(
                     ExaError.messageBuilder("F-USTI-18")
-                            .message("Failed to write class list temporary to {{path}}.", classListPath).toString(),
+                            .message("Failed to write temporary class list to {{path}}.", classListPath).toString(),
                     exception);
         }
         return classListPath;
