@@ -59,7 +59,7 @@ class UdfStartUpTimeImproverInt {
         return writeClassListToTmp(combinedClassList);
     }
 
-    @SuppressWarnings("Java:S5443") // writing to /tmp is safe in UDF since they run in an isolated container
+    @SuppressWarnings("java:S5443") // writing to /tmp is safe in UDF since they run in an isolated container
     private Path writeClassListToTmp(final String combinedClassList) {
         final Path classListPath = Path.of("/tmp/classes.lst");
         try {
