@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.zip.ZipFile;
 
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.bucketfs.UnsynchronizedBucket;
@@ -21,6 +21,7 @@ import com.exasol.errorreporting.ExaError;
 class UdfStartUpTimeImproverInt {
     private static final String DUMP_IN_TMP = "/tmp/dump.jsa";
     private static final String CLASSES_LIST_FILE_NAME = "classes.lst";
+    private static final int MAX_CLASS_LIST_MB = 10;
     private final String rootDirOffset;
 
     UdfStartUpTimeImproverInt() {
@@ -58,6 +59,7 @@ class UdfStartUpTimeImproverInt {
         return writeClassListToTmp(combinedClassList);
     }
 
+    @SuppressWarnings("Java:S5443") // writing to /tmp is safe in UDF since they run in an isolated container
     private Path writeClassListToTmp(final String combinedClassList) {
         final Path classListPath = Path.of("/tmp/classes.lst");
         try {
@@ -72,27 +74,35 @@ class UdfStartUpTimeImproverInt {
     }
 
     private String combineClassLists(final List<String> classLists) {
-        return classLists.stream().flatMap(list -> Arrays.stream(list.split("\n")).map(String::trim))
+        return classLists.stream().flatMap(list -> Arrays.stream(list.split("\n")).map(String::trim)).distinct()
                 .collect(Collectors.joining("\n"));
     }
 
     private Stream<String> findClassListInJar(final String jarName) {
         final Path jarFile = Path.of(this.rootDirOffset + jarName);
-        try (final FileInputStream inputStream = new FileInputStream(jarFile.toFile());
-                final BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
-                final ZipInputStream zipInputStream = new ZipInputStream(bufferedStream)) {
-            ZipEntry entry = zipInputStream.getNextEntry();
-            while (entry != null) {
-                if (CLASSES_LIST_FILE_NAME.equals(entry.getName())) {
-                    return Stream.of(new String(zipInputStream.readAllBytes(), StandardCharsets.UTF_8));
-                }
-                entry = zipInputStream.getNextEntry();
+        try (final ZipFile zipFile = new ZipFile(jarFile.toFile())) {
+            final ZipEntry entry = zipFile.getEntry(CLASSES_LIST_FILE_NAME);
+            if (entry == null) {
+                return Stream.empty();
+            } else {
+                return readClassList(zipFile, entry);
             }
-            return Stream.empty();
         } catch (final IOException exception) {
             throw new UncheckedIOException(ExaError.messageBuilder("E-USTI-16")
                     .message("Failed to read {{file}} for extracting the " + CLASSES_LIST_FILE_NAME + ".", jarFile)
                     .toString(), exception);
+        }
+    }
+
+    private Stream<String> readClassList(final ZipFile zipFile, final ZipEntry entry) throws IOException {
+        try (final InputStream inputStream = zipFile.getInputStream(entry)) {
+            final byte[] bytes = inputStream.readNBytes(MAX_CLASS_LIST_MB * 1_000_000);
+            if (inputStream.read() != -1) {
+                throw new IllegalStateException(ExaError.messageBuilder("E-USTI-19")
+                        .message("The uncompressed class list was larger then " + MAX_CLASS_LIST_MB + " MB.")
+                        .toString());
+            }
+            return Stream.of(new String(bytes, StandardCharsets.UTF_8));
         }
     }
 
