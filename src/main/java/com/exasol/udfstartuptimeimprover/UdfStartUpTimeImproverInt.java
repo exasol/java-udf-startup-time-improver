@@ -1,12 +1,15 @@
 package com.exasol.udfstartuptimeimprover;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import com.exasol.bucketfs.BucketAccessException;
 import com.exasol.bucketfs.UnsynchronizedBucket;
@@ -17,6 +20,8 @@ import com.exasol.errorreporting.ExaError;
  */
 class UdfStartUpTimeImproverInt {
     private static final String DUMP_IN_TMP = "/tmp/dump.jsa";
+    private static final String CLASSES_LIST_FILE_NAME = "classes.lst";
+    private static final int MAX_CLASS_LIST_MB = 10;
     private final String rootDirOffset;
 
     UdfStartUpTimeImproverInt() {
@@ -32,14 +37,73 @@ class UdfStartUpTimeImproverInt {
         this.rootDirOffset = rootDirOffset;
     }
 
-    public String run(final String udfDefinitionString, final String pathToClassList, final UnsynchronizedBucket bucket,
-            final String pathForDump) {
-        final Path pathToClassListWithOffset = Path.of(this.rootDirOffset + pathToClassList);
+    public String run(final String udfDefinitionString, final UnsynchronizedBucket bucket, final String pathForDump) {
         final UdfDefinition udfDefinition = new UdfDefinitionParser().parseUdfDefinition(udfDefinitionString);
-        assertClassListExists(pathToClassListWithOffset);
-        runClassDumpGeneration(udfDefinition.getJars(), pathToClassListWithOffset);
+        final Path classListPath = extractClassList(udfDefinition);
+        runClassDumpGeneration(udfDefinition.getJars(), classListPath);
         uploadDump(bucket, pathForDump);
         return rewriteUdfDefinition(udfDefinition, bucket.getBucketFsName(), bucket.getBucketName(), pathForDump);
+    }
+
+    private Path extractClassList(final UdfDefinition udfDefinition) {
+        final List<String> classLists = udfDefinition.getJars().stream().flatMap(this::findClassListInJar)
+                .collect(Collectors.toList());
+        if (classLists.isEmpty()) {
+            throw new IllegalStateException(ExaError.messageBuilder("E-USTI-17")
+                    .message("None of the jars of this script contained a " + CLASSES_LIST_FILE_NAME + " file.")
+                    .mitigation(
+                            "Please check that the jar you're trying to optimize is \"Prepared for Java UDF startup time improver\".")
+                    .toString());
+        }
+        final String combinedClassList = combineClassLists(classLists);
+        return writeClassListToTmp(combinedClassList);
+    }
+
+    @SuppressWarnings("java:S5443") // writing to /tmp is safe in UDF since they run in an isolated container
+    private Path writeClassListToTmp(final String combinedClassList) {
+        final Path classListPath = Path.of("/tmp/classes.lst");
+        try {
+            Files.writeString(classListPath, combinedClassList);
+        } catch (final IOException exception) {
+            throw new IllegalStateException(
+                    ExaError.messageBuilder("F-USTI-18")
+                            .message("Failed to write temporary class list to {{path}}.", classListPath).toString(),
+                    exception);
+        }
+        return classListPath;
+    }
+
+    private String combineClassLists(final List<String> classLists) {
+        return classLists.stream().flatMap(list -> Arrays.stream(list.split("\n")).map(String::trim)).distinct()
+                .collect(Collectors.joining("\n"));
+    }
+
+    private Stream<String> findClassListInJar(final String jarName) {
+        final Path jarFile = Path.of(this.rootDirOffset + jarName);
+        try (final ZipFile zipFile = new ZipFile(jarFile.toFile())) {
+            final ZipEntry entry = zipFile.getEntry(CLASSES_LIST_FILE_NAME);
+            if (entry == null) {
+                return Stream.empty();
+            } else {
+                return readClassList(zipFile, entry);
+            }
+        } catch (final IOException exception) {
+            throw new UncheckedIOException(ExaError.messageBuilder("E-USTI-16")
+                    .message("Failed to read {{file}} for extracting the " + CLASSES_LIST_FILE_NAME + ".", jarFile)
+                    .toString(), exception);
+        }
+    }
+
+    private Stream<String> readClassList(final ZipFile zipFile, final ZipEntry entry) throws IOException {
+        try (final InputStream inputStream = zipFile.getInputStream(entry)) {
+            final byte[] bytes = inputStream.readNBytes(MAX_CLASS_LIST_MB * 1_000_000);
+            if (inputStream.read() != -1) {
+                throw new IllegalStateException(ExaError.messageBuilder("E-USTI-19")
+                        .message("The uncompressed class list was larger then " + MAX_CLASS_LIST_MB + " MB.")
+                        .toString());
+            }
+            return Stream.of(new String(bytes, StandardCharsets.UTF_8));
+        }
     }
 
     private String rewriteUdfDefinition(final UdfDefinition udfDefinition, final String bfsService,
@@ -92,14 +156,6 @@ class UdfStartUpTimeImproverInt {
             throw new IllegalStateException(ExaError.messageBuilder("E-USTI-9")
                     .message("Building class archive failed (exit code was {{exit code}}):{{output}}\n", exitCode,
                             output)
-                    .toString());
-        }
-    }
-
-    private void assertClassListExists(final Path pathToClassList) {
-        if (!Files.exists(pathToClassList)) {
-            throw new IllegalArgumentException(ExaError.messageBuilder("E-USTI-8")
-                    .message("Could not find the specified classes list {{path}} in BucketFS.", pathToClassList)
                     .toString());
         }
     }

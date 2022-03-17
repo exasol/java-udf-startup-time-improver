@@ -145,7 +145,7 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>test-compile</phase>
                     </execution>
                 </executions>
                 <configuration>

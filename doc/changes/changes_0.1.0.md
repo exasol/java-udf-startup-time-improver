@@ -1,10 +1,11 @@
-# Java UDF startup time improver 0.1.0, released 2022-??-??
+# Java UDF startup time improver 0.1.0, released 2022-03-17
 
 Code name: Initial Implementation
 
 ## Features
 
 * #1: Initial Implementation
+* #3: Adapted interface to read the class list from jar
 
 ## Dependency Updates
 

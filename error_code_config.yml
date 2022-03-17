@@ -2,4 +2,4 @@ error-tags:
   USTI:
     packages:
       - com.exasol.udfstartuptimeimprover
-    highest-index: 15
+    highest-index: 19
