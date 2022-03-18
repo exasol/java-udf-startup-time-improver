@@ -1,4 +1,4 @@
-# Java UDF startup time improver 0.1.0, released 2022-03-17
+# Java UDF startup time improver 0.1.0, released 2022-03-18
 
 Code name: Initial Implementation
 

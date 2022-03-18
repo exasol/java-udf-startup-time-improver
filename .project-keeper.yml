@@ -4,7 +4,6 @@ sources:
     modules:
       - lombok
       - integration_tests
-      - lombok
       - jar_artifact
       - udf_coverage
   - type: maven
