@@ -12,12 +12,12 @@ class UdfDefinitionTest {
 
     @Test
     void testToString() {
-        final UdfDefinition udfDefinition = new UdfDefinition(
-                "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
+        final UdfDefinition udfDefinition = new UdfDefinition("CREATE JAVA SCALAR SCRIPT", "TEST", "MY_UDF",
+                "(...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
                 List.of("/buckets/bfsdefault/default/test.jar", "/buckets/bfsdefault/default/other.jar"),
                 List.of("-Xms128m", "-Xmx1024m"));
         assertThat(udfDefinition.toString(),
-                equalTo("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
+                equalTo("CREATE JAVA SCALAR SCRIPT \"TEST\".\"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
                         + "%scriptclass com.example.testudf.MyUdf;\n"//
                         + "%jvmoption -Xms128m -Xmx1024m;\n"//
                         + "%jar /buckets/bfsdefault/default/test.jar;\n"
@@ -26,11 +26,11 @@ class UdfDefinitionTest {
 
     @Test
     void testMinimalToString() {
-        final UdfDefinition udfDefinition = new UdfDefinition(
-                "CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
+        final UdfDefinition udfDefinition = new UdfDefinition("CREATE JAVA SCALAR SCRIPT", "TEST", "MY_UDF",
+                "(...) RETURNS VARCHAR(50) UTF8 AS", "com.example.testudf.MyUdf",
                 List.of("/buckets/bfsdefault/default/test.jar"), Collections.emptyList());
         assertThat(udfDefinition.toString(),
-                equalTo("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
+                equalTo("CREATE JAVA SCALAR SCRIPT \"TEST\".\"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
                         + "%scriptclass com.example.testudf.MyUdf;\n"
                         + "%jar /buckets/bfsdefault/default/test.jar;\n\n"));
     }

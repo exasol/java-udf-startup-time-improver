@@ -10,16 +10,20 @@ import lombok.With;
  */
 @Data
 public class UdfDefinition {
-    final String createStatement;
-    final String scriptClass;
-    final List<String> jars;
+    private final String createStatementStart;
     @With
-    final List<String> jvmOptions;
+    private final String schema;
+    private final String name;
+    private final String createStatementEnd;
+    private final String scriptClass;
+    private final List<String> jars;
+    @With
+    private final List<String> jvmOptions;
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder(
-                this.createStatement + "\n%scriptclass " + this.scriptClass + ";\n");
+        final StringBuilder builder = new StringBuilder(this.createStatementStart + " " + quote(this.schema) + "."
+                + quote(this.name) + " " + this.createStatementEnd + "\n%scriptclass " + this.scriptClass + ";\n");
         if (!this.jvmOptions.isEmpty()) {
             builder.append("%jvmoption ").append(String.join(" ", this.jvmOptions)).append(";\n");
         }
@@ -28,5 +32,9 @@ public class UdfDefinition {
         }
         builder.append("\n");
         return builder.toString();
+    }
+
+    private String quote(final String identifier) {
+        return "\"" + identifier.replace("\"", "\"\"") + "\"";
     }
 }

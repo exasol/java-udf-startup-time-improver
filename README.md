@@ -24,29 +24,8 @@ This tool only has an impact when used with Exasol version 7.0.17 and 7.1.7. On 
 
 1. Download the latest release of this project.
 2. Upload the jar to BucketFS.
-3. Create the following functions:
-
-  ```sql
-  CREATE SCHEMA IMPROVER; 
-  
-  CREATE JAVA SCALAR SCRIPT "IMPROVER"."JAVA_UDF_STARTUP_TIME_IMPROVER_INT" (
-    "UDF_DEFINITION" VARCHAR(2000000) UTF8, 
-    "CONNECTION_NAME" VARCHAR(200) UTF8, 
-    "BUCKET_FS_PORT" DECIMAL(18,0), 
-    "BUCKET_FS_SERVICE" VARCHAR(200) UTF8, 
-    "BUCKET_FS_BUCKET" VARCHAR(200) UTF8, 
-    "PATH_FOR_DUMP" VARCHAR(200) UTF8)
-  RETURNS VARCHAR(2000) UTF8 AS
-  %scriptclass com.exasol.udfstartuptimeimprover.UdfStartUpTimeImprover;
-  %jar /buckets/bfsdefault/default/java-udf-startup-time-improver.jar;
-  /
-  
-  CREATE LUA SCRIPT "IMPROVER"."JAVA_UDF_STARTUP_TIME_IMPROVER" (UDF_SCHEMA,UDF_NAME,CONNECTION_NAME,BUCKET_FS_PORT,BUCKET_FS_SERVICE,BUCKET_FS_BUCKET,PATH_FOR_DUMP) RETURNS ROWCOUNT AS
-    local updatedUdfDef = query([[SELECT "IMPROVER".JAVA_UDF_STARTUP_TIME_IMPROVER_INT(
-      (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME=:udfName AND SCRIPT_SCHEMA=:udfSchema),:connection, :bfsPort, :bfsService, :bfsBucket, :pathForDump) AS CMD]], { udfName = UDF_NAME, udfSchema = UDF_SCHEMA, connection = CONNECTION_NAME, bfsPort = BUCKET_FS_PORT, bfsService = BUCKET_FS_SERVICE, bfsBucket = BUCKET_FS_BUCKET, pathForDump = PATH_FOR_DUMP })
-    query(updatedUdfDef[1].CMD)
-  /
-  ```
+3. Run the [installation script](src/install.sql)
+   The script contains the path `/buckets/bfsdefault/default/java-udf-startup-time-improver.jar`. Please adapt it to point to the correct Bucket and jar.
 
 ## Usage
 
