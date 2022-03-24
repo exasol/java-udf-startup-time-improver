@@ -38,7 +38,6 @@ public class UdfDefinitionParser {
     }
 
     private UdfDefinition readDefinition(final String udfDefinition) {
-
         final int indexOfNameStart = indexOfUnquoted(udfDefinition, KEYWORD_SCRIPT, 0) + KEYWORD_SCRIPT.length();
         final int indexOfNameEnd = indexOfUnquoted(udfDefinition, " ",
                 indexOfNextNonWonWhitespace(udfDefinition, indexOfNameStart));

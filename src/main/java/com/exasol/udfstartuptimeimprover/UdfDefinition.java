@@ -10,15 +10,15 @@ import lombok.With;
  */
 @Data
 public class UdfDefinition {
-    final String createStatementStart;
-    final String createStatementEnd;
+    private final String createStatementStart;
     @With
     private final String schema;
     private final String name;
-    final String scriptClass;
-    final List<String> jars;
+    private final String createStatementEnd;
+    private final String scriptClass;
+    private final List<String> jars;
     @With
-    final List<String> jvmOptions;
+    private final List<String> jvmOptions;
 
     @Override
     public String toString() {
