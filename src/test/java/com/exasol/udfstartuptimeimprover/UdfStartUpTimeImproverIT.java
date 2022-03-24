@@ -30,7 +30,8 @@ import com.exasol.udfdebugging.UdfTestSetup;
 @Testcontainers
 class UdfStartUpTimeImproverIT {
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>(
+            "exasol/docker-db:7.1.7").withReuse(true);
     private static final String CURRENT_VERSION = MavenProjectVersionGetter.getCurrentProjectVersion();
     private static final String BUCKET_FS_CONNECTION = "MY_BUCKET_FS_CONNECTION";
     private static Connection connection;
@@ -152,7 +153,7 @@ class UdfStartUpTimeImproverIT {
     }
 
     private void assertOptimizedUdfStillWorks(final String rewrittenCreate) throws SQLException {
-        statement.executeUpdate(rewrittenCreate + "%jvmoption -Xshare:on;\n");
+        statement.executeUpdate(rewrittenCreate + "%jvmoption -Xshare:on -Xlog:class+path=info -verbose:class;\n");
         assertMyUdfWorks();
     }
 

@@ -18,6 +18,8 @@ The Java UDF startup time improver is a tool that optimizes Java UDF. It does so
 
 **This tool can only optimize projects that are prepared for it.** To find out if a certain project is already prepared for being optimized look out for the badge "Prepared for Java UDF startup time improver" in the project's readme.
 
+This tool only has an impact when used with Exasol version 7.0.17 and 7.1.7. On older version it has no effect.
+
 ## Installation
 
 1. Download the latest release of this project.

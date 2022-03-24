@@ -40,7 +40,10 @@ class UdfStartUpTimeImproverInt {
     public String run(final String udfDefinitionString, final UnsynchronizedBucket bucket, final String pathForDump) {
         final UdfDefinition udfDefinition = new UdfDefinitionParser().parseUdfDefinition(udfDefinitionString);
         final Path classListPath = extractClassList(udfDefinition);
-        runClassDumpGeneration(udfDefinition.getJars(), classListPath);
+        final List<String> jars = new ArrayList<>();
+        jars.add("/exaudf/javacontainer/libexaudf.jar");
+        jars.addAll(udfDefinition.getJars());
+        runClassDumpGeneration(jars, classListPath);
         uploadDump(bucket, pathForDump);
         return rewriteUdfDefinition(udfDefinition, bucket.getBucketFsName(), bucket.getBucketName(), pathForDump);
     }
@@ -135,8 +138,10 @@ class UdfStartUpTimeImproverInt {
             final List<String> commandParts = new ArrayList<>(
                     List.of("java", "-Xshare:dump", "-XX:SharedClassListFile=" + pathToClassList,
                             "-XX:SharedArchiveFile=" + DUMP_IN_TMP, "--class-path"));
-            commandParts.addAll(jars);
-            final Process process = Runtime.getRuntime().exec(commandParts.toArray(String[]::new));
+            commandParts.add(String.join(":", jars));
+            final Process process = new ProcessBuilder(commandParts.toArray(String[]::new))
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT).redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start();
             final int exitCode = process.waitFor();
             assertExitCode(process, exitCode);
         } catch (final InterruptedException exception) {
