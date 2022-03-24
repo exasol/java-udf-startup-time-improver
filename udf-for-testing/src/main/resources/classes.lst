@@ -2,3 +2,4 @@ java/lang/Object
 java/io/Serializable
 java/lang/Comparable
 java/lang/CharSequence
+com/exasol/testudf/MyUdf
