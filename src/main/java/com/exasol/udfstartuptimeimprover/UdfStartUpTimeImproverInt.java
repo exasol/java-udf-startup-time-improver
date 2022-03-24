@@ -37,7 +37,8 @@ class UdfStartUpTimeImproverInt {
         this.rootDirOffset = rootDirOffset;
     }
 
-    public String run(final String udfDefinitionString, final UnsynchronizedBucket bucket, final String pathForDump) {
+    public String run(final String udfDefinitionString, final String schema, final UnsynchronizedBucket bucket,
+            final String pathForDump) {
         final UdfDefinition udfDefinition = new UdfDefinitionParser().parseUdfDefinition(udfDefinitionString);
         final Path classListPath = extractClassList(udfDefinition);
         final List<String> jars = new ArrayList<>();
@@ -45,7 +46,8 @@ class UdfStartUpTimeImproverInt {
         jars.addAll(udfDefinition.getJars());
         runClassDumpGeneration(jars, classListPath);
         uploadDump(bucket, pathForDump);
-        return rewriteUdfDefinition(udfDefinition, bucket.getBucketFsName(), bucket.getBucketName(), pathForDump);
+        return rewriteUdfDefinition(udfDefinition, schema, bucket.getBucketFsName(), bucket.getBucketName(),
+                pathForDump);
     }
 
     private Path extractClassList(final UdfDefinition udfDefinition) {
@@ -109,13 +111,13 @@ class UdfStartUpTimeImproverInt {
         }
     }
 
-    private String rewriteUdfDefinition(final UdfDefinition udfDefinition, final String bfsService,
+    private String rewriteUdfDefinition(final UdfDefinition udfDefinition, final String schema, final String bfsService,
             final String bfsBucket, final String pathForDump) {
         final Path pathToDumpForInUdf = Path.of("/buckets/").resolve(bfsService).resolve(bfsBucket)
                 .resolve(pathForDump);
         final ArrayList<String> newJvmOptions = new ArrayList<>(udfDefinition.getJvmOptions());
         newJvmOptions.add("-XX:SharedArchiveFile=" + pathToDumpForInUdf);
-        final String udfDefWithJvmOption = udfDefinition.withJvmOptions(newJvmOptions).toString();
+        final String udfDefWithJvmOption = udfDefinition.withJvmOptions(newJvmOptions).withSchema(schema).toString();
         if (!udfDefWithJvmOption.toUpperCase().startsWith("CREATE OR REPLACE")) {
             return "CREATE OR REPLACE" + udfDefWithJvmOption.substring("CREATE".length());
         } else {

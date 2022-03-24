@@ -18,8 +18,9 @@ class UdfDefinitionParserTest {
                         + "%jvmoption -Xms128m -Xmx1024m -Xss512k;\n"//
                         + "%jar /buckets/bfsdefault/default/udf-for-testing.jar;\n\n");
         assertAll(//
-                () -> assertThat(result.getCreateStatement(),
-                        equalTo("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS")),
+                () -> assertThat(result.getCreateStatementStart(), equalTo("CREATE JAVA SCALAR SCRIPT")),
+                () -> assertThat(result.getName(), equalTo("MY_UDF")),
+                () -> assertThat(result.getCreateStatementEnd(), equalTo("(...) RETURNS VARCHAR(50) UTF8 AS")),
                 () -> assertThat(result.getScriptClass(), equalTo("com.exasol.testudf.MyUdf")),
                 () -> assertThat(result.getJars(), contains("/buckets/bfsdefault/default/udf-for-testing.jar")),
                 () -> assertThat(result.getJvmOptions(), containsInAnyOrder("-Xms128m", "-Xmx1024m", "-Xss512k"))//
@@ -70,7 +71,7 @@ class UdfDefinitionParserTest {
         final IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> PARSER.parseUdfDefinition("CREATE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8"
                         + "%jar /buckets/bfsdefault/default/udf-for-testing.jar;\n\n"));
-        assertThat(exception.getMessage(), containsString("Could not find keyword 'AS'."));
+        assertThat(exception.getMessage(), containsString("Could not find keyword ' AS'."));
     }
 
     @Test

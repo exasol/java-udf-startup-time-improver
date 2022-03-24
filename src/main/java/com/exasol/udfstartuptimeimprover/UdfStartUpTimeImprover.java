@@ -13,6 +13,9 @@ import com.exasol.errorreporting.ExaError;
 public class UdfStartUpTimeImprover {
     /** Name for the UDF parameter that contains the definition of the UDF / adapter script to optimize. */
     public static final String PARAMETER_UDF_DEFINITION = "UDF_DEFINITION";
+
+    /** Name for the UDF parameter that contains the name of the schema of the UDF. */
+    public static final String PARAMETER_UDF_SCHEMA = "UDF_SCHEMA";
     /**
      * Name of the UDF parameter that connections the name of a connection that stores the write-password of the
      * BucketFS as 'IDENTIFIED BY'.
@@ -45,6 +48,7 @@ public class UdfStartUpTimeImprover {
     // however given by the UDF framework
     public static String run(final ExaMetadata exaMetadata, final ExaIterator exaIterator) throws Exception {
         final String udfDefinitionString = readStringParameter(exaIterator, PARAMETER_UDF_DEFINITION);
+        final String schema = readStringParameter(exaIterator, PARAMETER_UDF_SCHEMA);
         final String connectionName = readStringParameter(exaIterator, PARAMETER_CONNECTION);
         final ExaConnectionInformation bucketFsConnection = getConnection(exaMetadata, connectionName);
         final String bfsService = readStringParameter(exaIterator, PARAMETER_BUCKET_FS_SERVICE);
@@ -54,7 +58,7 @@ public class UdfStartUpTimeImprover {
         final UnsynchronizedBucket bucket = WriteEnabledBucket.builder().useTls(false).raiseTlsErrors(false)
                 .ipAddress("127.0.0.1").port(bfsPort).serviceName(bfsService).name(bfsBucket).readPassword("")
                 .writePassword(bucketFsConnection.getPassword()).build();
-        return new UdfStartUpTimeImproverInt().run(udfDefinitionString, bucket, pathForDump);
+        return new UdfStartUpTimeImproverInt().run(udfDefinitionString, schema, bucket, pathForDump);
     }
 
     private static ExaConnectionInformation getConnection(final ExaMetadata exaMetadata, final String connectionName) {

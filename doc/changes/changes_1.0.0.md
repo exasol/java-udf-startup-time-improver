@@ -1,10 +1,11 @@
-# Java UDF startup time improver 1.0.0, released 2022-??-??
+# Java UDF startup time improver 1.0.0, released 2022-03-24
 
-Code name:
+Code name: Bugfixes
 
 ## Bug Fixes
 
 * #8: Fixed bug that made the rewritten script fail if class list contains classes from the jar file
+* #7: Added schema to create query.
 
 ## Dependency Updates
 

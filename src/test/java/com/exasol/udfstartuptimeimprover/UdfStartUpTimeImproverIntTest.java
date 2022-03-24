@@ -34,6 +34,7 @@ class UdfStartUpTimeImproverIntTest {
             + "%jar /buckets/bfsdefault/default/test.jar;\n\n";
     private static final String UDF_DEF = "CREATE" + UDF_DEF_PART_2;
     private static final String EXAMPLE_CLASS_LIST = "java/lang/Object\njava/io/Serializable\njava/lang/Comparable\njava/lang/CharSequence";
+    private static final String TEST_SCHEMA = "TEST";
     @TempDir
     Path tempDir;
 
@@ -48,9 +49,9 @@ class UdfStartUpTimeImproverIntTest {
         when(this.bucket.getBucketName()).thenReturn("default");
         when(this.bucket.getBucketFsName()).thenReturn("bfsdefault");
         final String result = new UdfStartUpTimeImproverInt(this.tempDir.toString())
-                .run(udfCreateCommandStart + UDF_DEF_PART_2, this.bucket, "my-dump.jsa");
+                .run(udfCreateCommandStart + UDF_DEF_PART_2, TEST_SCHEMA, this.bucket, "my-dump.jsa");
         assertThat(result, equalTo(
-                "CREATE OR REPLACE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n%scriptclass com.exasol.testudf.MyUdf;\n%jvmoption -Xms128m -Xmx1024m -Xss512k -XX:SharedArchiveFile=/buckets/bfsdefault/default/my-dump.jsa;\n%jar /buckets/bfsdefault/default/test.jar;\n\n"));
+                "CREATE OR REPLACE JAVA SCALAR SCRIPT \"TEST\".\"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n%scriptclass com.exasol.testudf.MyUdf;\n%jvmoption -Xms128m -Xmx1024m -Xss512k -XX:SharedArchiveFile=/buckets/bfsdefault/default/my-dump.jsa;\n%jar /buckets/bfsdefault/default/test.jar;\n\n"));
         verify(this.bucket).uploadFileNonBlocking(Path.of("/tmp/dump.jsa"), "my-dump.jsa");
     }
 
@@ -59,7 +60,7 @@ class UdfStartUpTimeImproverIntTest {
         createJarFile(null);
         final UdfStartUpTimeImproverInt improver = new UdfStartUpTimeImproverInt(this.tempDir.toString());
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> improver.run(UDF_DEF, this.bucket, "my-dump.jsa"));
+                () -> improver.run(UDF_DEF, TEST_SCHEMA, this.bucket, "my-dump.jsa"));
         assertThat(exception.getMessage(), equalTo(
                 "E-USTI-17: None of the jars of this script contained a classes.lst file. Please check that the jar you're trying to optimize is \"Prepared for Java UDF startup time improver\"."));
     }
@@ -70,7 +71,7 @@ class UdfStartUpTimeImproverIntTest {
         doThrow(new BucketAccessException("")).when(this.bucket).uploadFileNonBlocking(any(), any());
         final UdfStartUpTimeImproverInt improver = new UdfStartUpTimeImproverInt(this.tempDir.toString());
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> improver.run(UDF_DEF, this.bucket, "my-dump.jsa"));
+                () -> improver.run(UDF_DEF, TEST_SCHEMA, this.bucket, "my-dump.jsa"));
         assertThat(exception.getMessage(), equalTo("E-USTI-14: Failed to upload generated class dump to BucketFS."));
     }
 
@@ -79,7 +80,7 @@ class UdfStartUpTimeImproverIntTest {
         createJarFile("a".repeat(20_000_000));
         final UdfStartUpTimeImproverInt improver = new UdfStartUpTimeImproverInt(this.tempDir.toString());
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> improver.run(UDF_DEF, this.bucket, "my-dump.jsa"));
+                () -> improver.run(UDF_DEF, TEST_SCHEMA, this.bucket, "my-dump.jsa"));
         assertThat(exception.getMessage(), equalTo("E-USTI-19: The uncompressed class list was larger then 10 MB."));
     }
 
@@ -87,7 +88,7 @@ class UdfStartUpTimeImproverIntTest {
     void testMissingJarFile() {
         final UdfStartUpTimeImproverInt improver = new UdfStartUpTimeImproverInt(this.tempDir.toString());
         final UncheckedIOException exception = assertThrows(UncheckedIOException.class,
-                () -> improver.run(UDF_DEF, this.bucket, "my-dump.jsa"));
+                () -> improver.run(UDF_DEF, TEST_SCHEMA, this.bucket, "my-dump.jsa"));
         assertThat(exception.getMessage(), startsWith("E-USTI-16: Failed to read"));
     }
 

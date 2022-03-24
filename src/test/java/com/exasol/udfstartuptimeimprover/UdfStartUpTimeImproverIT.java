@@ -1,19 +1,15 @@
 package com.exasol.udfstartuptimeimprover;
 
-import static com.exasol.udfstartuptimeimprover.UdfStartUpTimeImprover.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
-import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 import org.testcontainers.junit.jupiter.Container;
@@ -45,7 +41,8 @@ class UdfStartUpTimeImproverIT {
         EXASOL.getDefaultBucket().uploadFile(Path.of("udf-for-testing/target/udf-for-testing.jar"),
                 "udf-for-testing.jar");
         EXASOL.getDefaultBucket().uploadFile(
-                Path.of("target/java-udf-startup-time-improver" + "-" + CURRENT_VERSION + ".jar"), "improver.jar");
+                Path.of("target/java-udf-startup-time-improver" + "-" + CURRENT_VERSION + ".jar"),
+                "java-udf-startup-time-improver.jar");
         connection = EXASOL.createConnection();
         statement = connection.createStatement();
         final UdfTestSetup udfTestSetup = new UdfTestSetup(EXASOL.getHostIp(), EXASOL.getDefaultBucket(), connection);
@@ -55,31 +52,18 @@ class UdfStartUpTimeImproverIT {
         schema.createUdfBuilder("MY_UDF").inputType(UdfScript.InputType.SCALAR).language(UdfScript.Language.JAVA)
                 .returns("VARCHAR(50) UTF8")
                 .bucketFsContent("com.exasol.testudf.MyUdf", "/buckets/bfsdefault/default/udf-for-testing.jar").build();
-        schema.createUdfBuilder("JAVA_UDF_STARTUP_TIME_IMPROVER_INT")
-                .parameter(PARAMETER_UDF_DEFINITION, "VARCHAR(2000000) UTF8")
-                .parameter(PARAMETER_CONNECTION, "VARCHAR(200) UTF8").parameter(PARAMETER_BUCKET_FS_PORT, "INTEGER")
-                .parameter(PARAMETER_BUCKET_FS_SERVICE, "VARCHAR(200) UTF8")
-                .parameter(PARAMETER_BUCKET_FS_BUCKET, "VARCHAR(200) UTF8").inputType(UdfScript.InputType.SCALAR)
-                .parameter(PARAMETER_PATH_FOR_DUMP, "VARCHAR(200) UTF8").language(UdfScript.Language.JAVA)
-                .returns("VARCHAR(2000) UTF8")
-                .bucketFsContent("com.exasol.udfstartuptimeimprover.UdfStartUpTimeImprover",
-                        "/buckets/bfsdefault/default/improver.jar")
-                .build();
-
-        schema.createScriptBuilder("JAVA_UDF_STARTUP_TIME_IMPROVER").parameter("UDF_SCHEMA", "UDF_NAME",
-                "CONNECTION_NAME", "BUCKET_FS_PORT", "BUCKET_FS_SERVICE", "BUCKET_FS_BUCKET", "PATH_FOR_DUMP")
-                .content(getImproverUdf()).build();
+        runInstallScript();
 
         objectFactory.createConnectionDefinition(BUCKET_FS_CONNECTION, "", "",
                 EXASOL.getDefaultBucket().getWritePassword());
         bucket = EXASOL.getDefaultBucket();
     }
 
-    @NotNull
-    private static String getImproverUdf() throws IOException {
-        try (final InputStream inputStream = UdfStartUpTimeImprover.class.getClassLoader()
-                .getResourceAsStream("udf.lua")) {
-            return new String(Objects.requireNonNull(inputStream).readAllBytes(), StandardCharsets.UTF_8);
+    private static void runInstallScript() throws SQLException, IOException {
+        final String script = Files.readString(Path.of("src/install.sql"));
+        for (final String command : script.split("\\n\\s*\\n")) {
+            if (!command.isBlank())
+                statement.executeUpdate(command.trim());
         }
     }
 
@@ -108,14 +92,14 @@ class UdfStartUpTimeImproverIT {
     void testRawImprover(@TempDir final Path tempDir) throws SQLException, InterruptedException, BucketAccessException {
         cleanupBucket();
         try (final ResultSet resultSet = statement.executeQuery(
-                "SELECT TEST.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME='MY_UDF' AND SCRIPT_SCHEMA='TEST'),  '"
+                "SELECT IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME='MY_UDF' AND SCRIPT_SCHEMA='TEST'),'TEST',   '"
                         + BUCKET_FS_CONNECTION + "', 2580, '" + bucket.getBucketFsName() + "', '"
                         + bucket.getBucketName() + "', 'my-dump.jsa');")) {
             resultSet.next();
             final String rewrittenCreate = resultSet.getString(1);
             assertAll(//
                     () -> assertThat(rewrittenCreate, startsWith(
-                            "CREATE OR REPLACE JAVA SCALAR SCRIPT \"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS")),
+                            "CREATE OR REPLACE JAVA SCALAR SCRIPT \"TEST\".\"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS")),
                     () -> assertThat(rewrittenCreate,
                             containsString("-XX:SharedArchiveFile=/buckets/bfsdefault/default/my-dump.jsa;")),
                     () -> assertDoesNotThrow(() -> bucket.downloadFile("my-dump.jsa", tempDir.resolve("my-dump.jsa"))), //
@@ -126,8 +110,9 @@ class UdfStartUpTimeImproverIT {
 
     @Test
     void testMissingStingParameter() {
-        final String query = "SELECT TEST.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( NULL,  '" + BUCKET_FS_CONNECTION
-                + "', 2580, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName() + "', 'my-dump.jsa');";
+        final String query = "SELECT IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( NULL, 'TEST', '"
+                + BUCKET_FS_CONNECTION + "', 2580, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName()
+                + "', 'my-dump.jsa');";
         final SQLDataException exception = assertThrows(SQLDataException.class, () -> statement.executeQuery(query));
         assertThat(exception.getMessage(), containsString(
                 "E-USTI-12: Could not read required parameter 'UDF_DEFINITION'. Make sure that you provide that parameter and that it's of type VARCHAR."));
@@ -135,7 +120,7 @@ class UdfStartUpTimeImproverIT {
 
     @Test
     void testMissingIntParameter() {
-        final String query = "SELECT TEST.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME='MY_UDF' AND SCRIPT_SCHEMA='TEST'),  '"
+        final String query = "SELECT IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( (SELECT SCRIPT_TEXT FROM SYS.EXA_ALL_SCRIPTS WHERE SCRIPT_NAME='MY_UDF' AND SCRIPT_SCHEMA='TEST'), 'TEST', '"
                 + BUCKET_FS_CONNECTION + "', NULL, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName()
                 + "', 'my-dump.jsa');";
         final SQLDataException exception = assertThrows(SQLDataException.class, () -> statement.executeQuery(query));
@@ -146,7 +131,7 @@ class UdfStartUpTimeImproverIT {
     @Test
     void testImproverWithLuaWrapper() throws SQLException, InterruptedException, BucketAccessException {
         cleanupBucket();
-        statement.executeUpdate("execute script TEST.JAVA_UDF_STARTUP_TIME_IMPROVER('TEST', 'MY_UDF',  '"
+        statement.executeUpdate("execute script IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER('TEST', 'MY_UDF',  '"
                 + BUCKET_FS_CONNECTION + "', 2580, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName()
                 + "', 'my-dump.jsa');");
         assertMyUdfWorks();
