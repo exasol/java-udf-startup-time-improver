@@ -62,8 +62,9 @@ class UdfStartUpTimeImproverIT {
     private static void runInstallScript() throws SQLException, IOException {
         final String script = Files.readString(Path.of("src/install.sql"));
         for (final String command : script.split("\\n\\s*\\n")) {
-            if (!command.isBlank())
+            if (!command.isBlank()) {
                 statement.executeUpdate(command.trim());
+            }
         }
     }
 

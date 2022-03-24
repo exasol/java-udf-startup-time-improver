@@ -68,8 +68,9 @@ public class UdfDefinitionParser {
 
     private int indexOfNextNonWonWhitespace(final String subject, final int position) {
         for (int index = position; index < subject.length(); index++) {
-            if (subject.charAt(index) != ' ')
+            if (subject.charAt(index) != ' ') {
                 return index;
+            }
         }
         return subject.length();
     }

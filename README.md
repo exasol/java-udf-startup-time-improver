@@ -25,7 +25,7 @@ This tool only has an impact when used with Exasol version 7.0.17 and 7.1.7. On 
 1. Download the latest release of this project.
 2. Upload the jar to BucketFS.
 3. Run the [installation script](src/install.sql)
-   The script contains the path `/buckets/bfsdefault/default/java-udf-startup-time-improver.jar`. Please adopt it to point to the correct Bucket and jar.
+   The script contains the path `/buckets/bfsdefault/default/java-udf-startup-time-improver.jar`. Please adapt it to point to the correct Bucket and jar.
 
 ## Usage
 
