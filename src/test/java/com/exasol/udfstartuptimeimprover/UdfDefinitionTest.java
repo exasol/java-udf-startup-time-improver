@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class UdfDefinitionTest {
 
     @Test
@@ -33,5 +35,10 @@ class UdfDefinitionTest {
                 equalTo("CREATE JAVA SCALAR SCRIPT \"TEST\".\"MY_UDF\" (...) RETURNS VARCHAR(50) UTF8 AS\n"
                         + "%scriptclass com.example.testudf.MyUdf;\n"
                         + "%jar /buckets/bfsdefault/default/test.jar;\n\n"));
+    }
+
+    @Test
+    void testEqualsContract() {
+        EqualsVerifier.forClass(UdfDefinition.class).verify();
     }
 }

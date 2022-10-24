@@ -26,8 +26,7 @@ import com.exasol.udfdebugging.UdfTestSetup;
 @Testcontainers
 class UdfStartUpTimeImproverIT {
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>(
-            "exasol/docker-db:7.1.7").withReuse(true);
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
     private static final String CURRENT_VERSION = MavenProjectVersionGetter.getCurrentProjectVersion();
     private static final String BUCKET_FS_CONNECTION = "MY_BUCKET_FS_CONNECTION";
     private static Connection connection;
@@ -70,20 +69,24 @@ class UdfStartUpTimeImproverIT {
 
     @AfterAll
     static void afterAll() throws SQLException {
-        statement.close();
-        connection.close();
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     @BeforeEach
     void setUp() throws BucketAccessException, InterruptedException, SQLException {
-        statement.executeUpdate("DROP SCRIPT IF EXISTS TEST.MY_UDF;");
+        statement.executeUpdate("DROP SCRIPT IF EXISTS TEST.MY_UDF");
         schema.createUdfBuilder("MY_UDF").inputType(UdfScript.InputType.SCALAR).language(UdfScript.Language.JAVA)
                 .returns("VARCHAR(50) UTF8")
                 .bucketFsContent("com.exasol.testudf.MyUdf", "/buckets/bfsdefault/default/udf-for-testing.jar").build();
     }
 
-    @SuppressWarnings("java:S2925") // sleep can be removed after https://github.com/exasol/bucketfs-java/issues/42 is
-    // fixed
+    @SuppressWarnings("java:S2925") // sleep can be removed after https://github.com/exasol/bucketfs-java/issues/42
+                                    // is fixed
     private void cleanupBucket() throws InterruptedException, BucketAccessException {
         bucket.deleteFileNonBlocking("my-dump.jsa");
         Thread.sleep(10_000);// give BucketFS time to sync
@@ -110,7 +113,7 @@ class UdfStartUpTimeImproverIT {
     }
 
     @Test
-    void testMissingStingParameter() {
+    void testMissingStringParameter() {
         final String query = "SELECT IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( NULL, 'TEST', '"
                 + BUCKET_FS_CONNECTION + "', 2580, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName()
                 + "', 'my-dump.jsa');";
@@ -144,7 +147,7 @@ class UdfStartUpTimeImproverIT {
     }
 
     private void assertMyUdfWorks() throws SQLException {
-        try (final ResultSet resultSet = statement.executeQuery("SELECT TEST.MY_UDF();")) {
+        try (final ResultSet resultSet = statement.executeQuery("SELECT TEST.MY_UDF()")) {
             resultSet.next();
             assertThat(resultSet.getString(1), equalTo("Hello World"));
         }
