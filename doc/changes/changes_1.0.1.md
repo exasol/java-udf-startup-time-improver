@@ -30,7 +30,7 @@ In this release we fixed the following vulnerabilities in test dependencies:
 
 #### Test Dependency Updates
 
-* Updated `com.exasol:exasol-testcontainers:6.1.1` to `6.2.0`
+* Updated `com.exasol:exasol-testcontainers:6.1.1` to `6.3.0`
 * Updated `com.exasol:maven-project-version-getter:1.1.0` to `1.2.0`
 * Updated `com.exasol:test-db-builder-java:3.3.1` to `3.4.0`
 * Updated `com.exasol:udf-debugging-java:0.6.0` to `0.6.4`
