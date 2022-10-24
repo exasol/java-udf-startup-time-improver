@@ -69,8 +69,12 @@ class UdfStartUpTimeImproverIT {
 
     @AfterAll
     static void afterAll() throws SQLException {
-        statement.close();
-        connection.close();
+        if (statement != null) {
+            statement.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
     }
 
     @BeforeEach
