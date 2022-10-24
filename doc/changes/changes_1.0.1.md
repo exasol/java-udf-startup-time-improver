@@ -34,6 +34,7 @@ In this release we fixed the following vulnerabilities in test dependencies:
 * Updated `com.exasol:maven-project-version-getter:1.1.0` to `1.2.0`
 * Updated `com.exasol:test-db-builder-java:3.3.1` to `3.4.0`
 * Updated `com.exasol:udf-debugging-java:0.6.0` to `0.6.4`
+* Added `nl.jqno.equalsverifier:equalsverifier:3.10.1`
 * Updated `org.jacoco:org.jacoco.agent:0.8.5` to `0.8.8`
 * Added `org.junit.jupiter:junit-jupiter-api:5.9.1`
 * Removed `org.junit.jupiter:junit-jupiter-engine:5.8.2`
@@ -52,6 +53,7 @@ In this release we fixed the following vulnerabilities in test dependencies:
 * Updated `org.apache.maven.plugins:maven-jar-plugin:3.2.0` to `3.2.2`
 * Updated `org.codehaus.mojo:versions-maven-plugin:2.8.1` to `2.10.0`
 * Updated `org.jacoco:jacoco-maven-plugin:0.8.7` to `0.8.8`
+* Removed `org.projectlombok:lombok-maven-plugin:1.18.20.0`
 * Added `org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184`
 * Updated `org.sonatype.ossindex.maven:ossindex-maven-plugin:3.1.0` to `3.2.0`
 
