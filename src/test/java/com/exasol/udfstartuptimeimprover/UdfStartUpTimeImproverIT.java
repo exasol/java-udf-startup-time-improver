@@ -26,8 +26,7 @@ import com.exasol.udfdebugging.UdfTestSetup;
 @Testcontainers
 class UdfStartUpTimeImproverIT {
     @Container
-    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>(
-            "exasol/docker-db:7.1.7").withReuse(true);
+    private static final ExasolContainer<? extends ExasolContainer<?>> EXASOL = new ExasolContainer<>().withReuse(true);
     private static final String CURRENT_VERSION = MavenProjectVersionGetter.getCurrentProjectVersion();
     private static final String BUCKET_FS_CONNECTION = "MY_BUCKET_FS_CONNECTION";
     private static Connection connection;
@@ -82,8 +81,8 @@ class UdfStartUpTimeImproverIT {
                 .bucketFsContent("com.exasol.testudf.MyUdf", "/buckets/bfsdefault/default/udf-for-testing.jar").build();
     }
 
-    @SuppressWarnings("java:S2925") // sleep can be removed after https://github.com/exasol/bucketfs-java/issues/42 is
-    // fixed
+    @SuppressWarnings("java:S2925") // sleep can be removed after https://github.com/exasol/bucketfs-java/issues/42
+                                    // is fixed
     private void cleanupBucket() throws InterruptedException, BucketAccessException {
         bucket.deleteFileNonBlocking("my-dump.jsa");
         Thread.sleep(10_000);// give BucketFS time to sync
