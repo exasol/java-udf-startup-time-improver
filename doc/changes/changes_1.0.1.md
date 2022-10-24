@@ -24,7 +24,7 @@ In this release we fixed the following vulnerabilities in test dependencies:
 
 #### Compile Dependency Updates
 
-* Updated `com.exasol:bucketfs-java:2.3.0` to `2.4.0`
+* Updated `com.exasol:bucketfs-java:2.3.0` to `2.4.1`
 * Updated `com.exasol:error-reporting-java:0.4.1` to `1.0.0`
 * Updated `com.exasol:exasol-jdbc:7.1.4` to `7.1.11`
 
