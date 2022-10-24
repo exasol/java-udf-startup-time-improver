@@ -13,4 +13,5 @@ sources:
       - jar_artifact
 version:
   fromSource: pom.xml
-
+linkReplacements:
+  - "LICENSE-exasol-script-api.txt|https://mit-license.org/"

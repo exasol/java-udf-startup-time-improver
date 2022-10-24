@@ -88,7 +88,7 @@
 | [Maven Site Plugin 3][54]                               | [The Apache Software License, Version 2.0][33] |
 
 [0]: http://www.exasol.com
-[1]: LICENSE-exasol-script-api.txt
+[1]: https://mit-license.org/
 [2]: https://docs.exasol.com/connect_exasol/drivers/jdbc.htm
 [3]: https://github.com/exasol/error-reporting-java/
 [4]: https://github.com/exasol/error-reporting-java/blob/main/LICENSE
