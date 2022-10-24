@@ -79,7 +79,7 @@ class UdfStartUpTimeImproverIT {
 
     @BeforeEach
     void setUp() throws BucketAccessException, InterruptedException, SQLException {
-        statement.executeUpdate("DROP SCRIPT IF EXISTS TEST.MY_UDF;");
+        statement.executeUpdate("DROP SCRIPT IF EXISTS TEST.MY_UDF");
         schema.createUdfBuilder("MY_UDF").inputType(UdfScript.InputType.SCALAR).language(UdfScript.Language.JAVA)
                 .returns("VARCHAR(50) UTF8")
                 .bucketFsContent("com.exasol.testudf.MyUdf", "/buckets/bfsdefault/default/udf-for-testing.jar").build();
@@ -113,7 +113,7 @@ class UdfStartUpTimeImproverIT {
     }
 
     @Test
-    void testMissingStingParameter() {
+    void testMissingStringParameter() {
         final String query = "SELECT IMPROVER.JAVA_UDF_STARTUP_TIME_IMPROVER_INT( NULL, 'TEST', '"
                 + BUCKET_FS_CONNECTION + "', 2580, '" + bucket.getBucketFsName() + "', '" + bucket.getBucketName()
                 + "', 'my-dump.jsa');";
@@ -147,7 +147,7 @@ class UdfStartUpTimeImproverIT {
     }
 
     private void assertMyUdfWorks() throws SQLException {
-        try (final ResultSet resultSet = statement.executeQuery("SELECT TEST.MY_UDF();")) {
+        try (final ResultSet resultSet = statement.executeQuery("SELECT TEST.MY_UDF()")) {
             resultSet.next();
             assertThat(resultSet.getString(1), equalTo("Hello World"));
         }
