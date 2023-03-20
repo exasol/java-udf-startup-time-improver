@@ -8,6 +8,10 @@
     <name>Java UDF startup time improver</name>
     <description>Tool for improving the startup time of Java UDFs</description>
     <url>https://github.com/exasol/java-udf-startup-time-improver/</url>
+    <properties>
+        <!-- UDF entry point cannot be tested -->
+        <sonar.coverage.exclusions>src/main/java/com/exasol/udfstartuptimeimprover/UdfStartUpTimeImprover.java</sonar.coverage.exclusions>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>com.exasol</groupId>
