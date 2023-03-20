@@ -56,7 +56,7 @@ public class UdfStartUpTimeImprover {
         final String pathForDump = readStringParameter(exaIterator, PARAMETER_PATH_FOR_DUMP);
         final int bfsPort = readIntParameter(exaIterator, PARAMETER_BUCKET_FS_PORT);
         final UnsynchronizedBucket bucket = WriteEnabledBucket.builder().useTls(false).raiseTlsErrors(false)
-                .ipAddress("127.0.0.1").port(bfsPort).serviceName(bfsService).name(bfsBucket).readPassword("")
+                .host("127.0.0.1").port(bfsPort).serviceName(bfsService).name(bfsBucket).readPassword("")
                 .writePassword(bucketFsConnection.getPassword()).build();
         return new UdfStartUpTimeImproverInt().run(udfDefinitionString, schema, bucket, pathForDump);
     }
