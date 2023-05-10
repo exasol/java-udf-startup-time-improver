@@ -6,12 +6,12 @@ Code name: Fix vulnerabilities in dependencies
 
 In this release we fixed the following vulnerabilities in test dependencies:
 
-* org.postgresql:postgresql:jar:42.3.3:test: [sonatype-2022-4402](https://ossindex.sonatype.org/vulnerability/sonatype-2022-4402)
+* org.postgresql:postgresql:jar:42.3.3:test: sonatype-2022-4402
 * io.netty:netty-common:jar:4.1.72.Final:test: CVE-2022-24823
-* io.netty:netty-handler:jar:4.1.72.Final:test: [sonatype-2020-0026](https://ossindex.sonatype.org/vulnerability/sonatype-2020-0026)
+* io.netty:netty-handler:jar:4.1.72.Final:test: sonatype-2020-0026
 * org.apache.xmlrpc:xmlrpc-common:jar:3.1.3:test: CVE-2016-5003 and CVE-2016-5002
 * com.google.protobuf:protobuf-java:jar:3.11.4:test: CVE-2022-3171 and CVE-2021-22569
-* commons-codec:commons-codec:jar:1.11:test: [sonatype-2012-0050](https://ossindex.sonatype.org/vulnerability/sonatype-2012-0050)
+* commons-codec:commons-codec:jar:1.11:test: sonatype-2012-0050
 * org.apache.xmlrpc:xmlrpc-client:jar:3.1.3:test: CVE-2016-5004
 
 ## Features
