@@ -14,4 +14,3 @@ version:
   fromSource: pom.xml
 excludes:
   - regex: "W-PK-CORE-151: Pom file '.*udf-for-testing.pom.xml' contains no reference to project-keeper-maven-plugin."
-  - regex: "E-PK-CORE-53: The dependencies.md file has outdated content.*"
