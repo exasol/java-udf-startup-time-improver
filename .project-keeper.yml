@@ -14,3 +14,5 @@ version:
   fromSource: pom.xml
 excludes:
   - regex: "W-PK-CORE-151: Pom file '.*udf-for-testing.pom.xml' contains no reference to project-keeper-maven-plugin."
+  - "E-PK-CORE-18: Outdated content: '.github/workflows/ci-build.yml'"
+  - "E-PK-CORE-18: Outdated content: '.github/workflows/release_droid_prepare_original_checksum.yml'"
