@@ -8,5 +8,10 @@
 
 dependencies.md                         linguist-generated=true
 pk_generated_parent.pom                 linguist-generated=true
-udf-for-testing/pk_generated_parent.pom linguist-generated=true
 doc/changes/changelog.md                linguist-generated=true
+.settings/org.eclipse.jdt.core.prefs    linguist-generated=true
+.settings/org.eclipse.jdt.ui.prefs      linguist-generated=true
+
+udf-for-testing/pk_generated_parent.pom              linguist-generated=true
+udf-for-testing/.settings/org.eclipse.jdt.core.prefs linguist-generated=true
+udf-for-testing/.settings/org.eclipse.jdt.ui.prefs   linguist-generated=true
