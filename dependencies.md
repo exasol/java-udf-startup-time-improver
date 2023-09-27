@@ -19,10 +19,10 @@
 | [JUnit Jupiter API][8]                          | [Eclipse Public License v2.0][9]  |
 | [JUnit Jupiter Params][8]                       | [Eclipse Public License v2.0][9]  |
 | [Hamcrest][10]                                  | [BSD License 3][11]               |
-| [EqualsVerifier | release normal jar][12]       | [Apache License, Version 2.0][13] |
+| [EqualsVerifier \| release normal jar][12]      | [Apache License, Version 2.0][13] |
 | [Testcontainers :: JUnit Jupiter Extension][14] | [MIT][15]                         |
 | [Test containers for Exasol on Docker][16]      | [MIT License][17]                 |
-| [SLF4J JDK14 Binding][18]                       | [MIT License][19]                 |
+| [SLF4J JDK14 Provider][18]                      | [MIT License][19]                 |
 | [Test Database Builder for Java][20]            | [MIT License][21]                 |
 | [Maven Project Version Getter][22]              | [MIT License][23]                 |
 | [udf-debugging-java][24]                        | [MIT License][25]                 |
@@ -41,10 +41,10 @@
 | [Maven Surefire Plugin][37]                             | [Apache-2.0][13]                               |
 | [Versions Maven Plugin][38]                             | [Apache License, Version 2.0][13]              |
 | [duplicate-finder-maven-plugin Maven Mojo][39]          | [Apache License 2.0][40]                       |
-| [Apache Maven Assembly Plugin][41]                      | [Apache License, Version 2.0][13]              |
+| [Apache Maven Assembly Plugin][41]                      | [Apache-2.0][13]                               |
 | [Apache Maven JAR Plugin][42]                           | [Apache License, Version 2.0][13]              |
 | [Artifact reference checker and unifier][43]            | [MIT License][44]                              |
-| [Apache Maven Dependency Plugin][45]                    | [Apache License, Version 2.0][13]              |
+| [Apache Maven Dependency Plugin][45]                    | [Apache-2.0][13]                               |
 | [Project keeper maven plugin][46]                       | [The MIT License][47]                          |
 | [Exec Maven Plugin][48]                                 | [Apache License 2][13]                         |
 | [Maven Failsafe Plugin][49]                             | [Apache-2.0][13]                               |
@@ -77,7 +77,7 @@
 | [Maven Surefire Plugin][37]                             | [Apache-2.0][13]                               |
 | [Versions Maven Plugin][38]                             | [Apache License, Version 2.0][13]              |
 | [duplicate-finder-maven-plugin Maven Mojo][39]          | [Apache License 2.0][40]                       |
-| [Apache Maven Assembly Plugin][41]                      | [Apache License, Version 2.0][13]              |
+| [Apache Maven Assembly Plugin][41]                      | [Apache-2.0][13]                               |
 | [Apache Maven JAR Plugin][42]                           | [Apache License, Version 2.0][13]              |
 | [Artifact reference checker and unifier][43]            | [MIT License][44]                              |
 | [JaCoCo :: Maven Plugin][50]                            | [Eclipse Public License 2.0][29]               |
@@ -103,7 +103,7 @@
 [11]: http://opensource.org/licenses/BSD-3-Clause
 [12]: https://www.jqno.nl/equalsverifier
 [13]: https://www.apache.org/licenses/LICENSE-2.0.txt
-[14]: https://testcontainers.org
+[14]: https://java.testcontainers.org
 [15]: http://opensource.org/licenses/MIT
 [16]: https://github.com/exasol/exasol-testcontainers/
 [17]: https://github.com/exasol/exasol-testcontainers/blob/main/LICENSE
@@ -128,7 +128,7 @@
 [36]: http://www.apache.org/licenses/LICENSE-2.0.txt
 [37]: https://maven.apache.org/surefire/maven-surefire-plugin/
 [38]: https://www.mojohaus.org/versions/versions-maven-plugin/
-[39]: https://github.com/basepom/duplicate-finder-maven-plugin
+[39]: https://basepom.github.io/duplicate-finder-maven-plugin
 [40]: http://www.apache.org/licenses/LICENSE-2.0.html
 [41]: https://maven.apache.org/plugins/maven-assembly-plugin/
 [42]: https://maven.apache.org/plugins/maven-jar-plugin/
