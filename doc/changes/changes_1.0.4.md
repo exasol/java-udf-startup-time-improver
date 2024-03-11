@@ -6,6 +6,8 @@ Code name: Fix CVE-2024-25710 and CVE-2024-26308 in test dependency `org.apache.
 
 This release fixes vulnerabilities CVE-2024-25710 and CVE-2024-26308 in test dependency `org.apache.commons:commons-compress`.
 
+Starting with this release we test the project with both Exasol 7.1 and 8.
+
 ## Security
 
 * #19: Fixed vulnerabilities CVE-2024-25710 and CVE-2024-26308 in test dependency `org.apache.commons:commons-compress`
