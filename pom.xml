@@ -147,7 +147,9 @@
                     <executable>mvn</executable>
                     <workingDirectory>${project.basedir}/udf-for-testing</workingDirectory>
                     <arguments>
+                        <argument>--batch-mode</argument>
                         <argument>package</argument>
+                        <argument>-Djava.version=${java.version}</argument>
                     </arguments>
                 </configuration>
             </plugin>
