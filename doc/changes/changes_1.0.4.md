@@ -53,6 +53,7 @@ Starting with this release we test the project with both Exasol 7.1 and 8.
 #### Plugin Dependency Updates
 
 * Updated `com.exasol:error-code-crawler-maven-plugin:1.3.0` to `2.0.0`
+* Updated `org.apache.maven.plugins:maven-compiler-plugin:3.11.0` to `3.12.1`
 * Updated `org.apache.maven.plugins:maven-enforcer-plugin:3.4.0` to `3.4.1`
 * Updated `org.apache.maven.plugins:maven-surefire-plugin:3.1.2` to `3.2.5`
 * Added `org.apache.maven.plugins:maven-toolchains-plugin:3.1.0`
