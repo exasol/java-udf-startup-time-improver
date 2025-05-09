@@ -1,5 +1,7 @@
 # Java UDF Startup Time Improver
 
+## ⚠️ This project is deprecated and no longer maintained ⚠️
+
 [![Build Status](https://github.com/exasol/java-udf-startup-time-improver/actions/workflows/ci-build.yml/badge.svg)](https://github.com/exasol/java-udf-startup-time-improver/actions/workflows/ci-build.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.exasol%3Ajava-udf-startup-time-improver&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.exasol%3Ajava-udf-startup-time-improver)
